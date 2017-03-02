@@ -1,0 +1,53 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.3"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile files('libs/gson-2.2.1.jar')
+    compile files('libs/pinyin4j-2.5.0.jar')
+}
+
+apply plugin: 'com.novoda.bintray-release'
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def bintrayUserVal = properties.getProperty('bintrayUser')
+def bintrayKeyVal = properties.getProperty('bintrayKey')
+
+
+//若需要javadoc.需要设置一下编码和过滤一下错误.如果有自定义过class的注释带特殊符号等导致无法编译必备task配置
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+}
+
+publish {
+    userOrg = 'chencj95318'  //jcenter的用户名
+    groupId = 'com.youjiang.lib'    //组织id
+    artifactId = 'JcenterSample'    //libName
+    publishVersion = '1.0.0'        //libVersion
+    desc = 'Just a jcenter upload sample' //lib desc
+    website = 'https://github.com/chenzj-king/JcenterSample' //lib的地址
+    bintrayUser = bintrayUserVal //上面task中读取到的jcenterName
+    bintrayKey = bintrayKeyVal //上面task中读取到的apiKey
+    dryRun = false
+}
